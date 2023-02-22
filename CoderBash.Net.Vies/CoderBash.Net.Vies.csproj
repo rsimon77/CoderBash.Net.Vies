@@ -1,9 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!--NuSpec properties-->
+    <AssemblyName>CoderBash.Net.Vies</AssemblyName>
+    <PackageId>CoderBash.Net.Vies</PackageId>
+    <PackageTags>CoderBash;SDK;Vies;Europe;NET</PackageTags>
+    <LangVersion>latest</LangVersion>
+    <Version>1.0.0</Version>
+    <Authors>CoderBash</Authors>
+    <Company>Demarbit BV</Company>
+    <Description>.NET Client SDK for validating VAT numbers using the VIES vat number validation and accessing VAT information for all EU members.</Description>
+    <PackageProjectUrl>https://github.com/CoderBash/CoderBash.Net.Vies</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/CoderBash/CoderBash.Net.Vies</RepositoryUrl>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NetStandardImplicitPackageVersion Condition=" '$(TargetFramework)' == 'netstandard2.0' ">2.0.0</NetStandardImplicitPackageVersion>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>

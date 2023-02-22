@@ -5,61 +5,117 @@ using CoderBash.Net.Vies.Models;
 
 namespace CoderBash.Net.Vies.Clients
 {
+	/// <summary>
+	/// Client for accessing VAT information for EU member states
+	/// </summary>
 	public class VatClient
-	{
+    {
 		private readonly EUVatRates _rates;
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public VatClient()
 		{
 			_rates = new EUVatRates();
 		}
 
+		/// <summary>
+		/// Get all available rates for the specified country.
+		/// </summary>
+		/// <param name="countryCode">ISO 2 Code of the country. See <see cref="EUCountryCodes"/> for available options.</param>
+		/// <returns>List of <see cref="VatRate"/> objects.</returns>
 		public List<VatRate> GetRatesForCountry(string countryCode)
 		{
 			return GetRatesForCountry(Enum.Parse<EUCountryCodes>(countryCode));
 		}
 
-		public List<VatRate> GetRatesForCountry(EUCountryCodes country)
+        /// <summary>
+        /// Get all available rates for the specified country
+        /// </summary>
+        /// <param name="country">ISO 2 Code of the country. See <see cref="EUCountryCodes"/> for available options.</param>
+        /// <returns>List of <see cref="VatRate"/> objects.</returns>
+        public List<VatRate> GetRatesForCountry(EUCountryCodes country)
 		{
 			return GetRates(country);
 		}
 
-		public VatRate GetStandardRateForCountry(string countryCode)
+        /// <summary>
+        /// Get the standard VAT rate for the specified country.
+        /// </summary>
+        /// <param name="countryCode">ISO 2 Code of the country. See <see cref="EUCountryCodes"/> for available options.</param>
+        /// <returns><see cref="VatRate"/> object.</returns>
+        public VatRate GetStandardRateForCountry(string countryCode)
 		{
 			return GetStandardRateForCountry(Enum.Parse<EUCountryCodes>(countryCode));
 		}
 
-		public VatRate GetStandardRateForCountry(EUCountryCodes country)
+        /// <summary>
+        /// Get the standard VAT rate for the specified country.
+        /// </summary>
+        /// <param name="country">ISO 2 Code of the country. See <see cref="EUCountryCodes"/> for available options.</param>
+        /// <returns><see cref="VatRate"/> object.</returns>
+        public VatRate GetStandardRateForCountry(EUCountryCodes country)
 		{
 			return GetRates(country, VatRateType.Standard).First();
 		}
 
-		public List<VatRate> GetReducedRatesForCountry(string countryCode)
+        /// <summary>
+        /// Get all available reduced rates (0 - 2) for the specified country.
+        /// </summary>
+        /// <param name="countryCode">ISO 2 Code of the country. See <see cref="EUCountryCodes"/> for available options.</param>
+        /// <returns>List of <see cref="VatRate"/> objects.</returns>
+        public List<VatRate> GetReducedRatesForCountry(string countryCode)
 		{
 			return GetReducedRatesForCountry(Enum.Parse<EUCountryCodes>(countryCode));
 		}
 
-		public List<VatRate> GetReducedRatesForCountry(EUCountryCodes country)
+        /// <summary>
+        /// Get all available reduced rates (0 - 2) for the specified country.
+        /// </summary>
+        /// <param name="country">ISO 2 Code of the country. See <see cref="EUCountryCodes"/> for available options.</param>
+        /// <returns>List of <see cref="VatRate"/> objects.</returns>
+        public List<VatRate> GetReducedRatesForCountry(EUCountryCodes country)
 		{
 			return GetRates(country, VatRateType.Reduced);
 		}
 
-		public VatRate? GetSuperReducedRateForCountry(string countryCode)
+        /// <summary>
+        /// Get the super reduced rate for the specified country if available.
+        /// </summary>
+        /// <param name="countryCode">ISO 2 Code of the country. See <see cref="EUCountryCodes"/> for available options.</param>
+        /// <returns><see cref="VatRate"/> object.</returns>
+        public VatRate? GetSuperReducedRateForCountry(string countryCode)
 		{
 			return GetSuperReducedRateForCountry(Enum.Parse<EUCountryCodes>(countryCode));
 		}
 
-		public VatRate? GetSuperReducedRateForCountry(EUCountryCodes country)
+        /// <summary>
+        /// Get the super reduced rate for the specified country if available.
+        /// </summary>
+        /// <param name="country">ISO 2 Code of the country. See <see cref="EUCountryCodes"/> for available options.</param>
+        /// <returns><see cref="VatRate"/> object.</returns>
+        public VatRate? GetSuperReducedRateForCountry(EUCountryCodes country)
 		{
 			return GetRates(country, VatRateType.SuperReduced).FirstOrDefault();
 		}
 
-		public VatRate? GetParkingRateForCountry(string countryCode)
+        /// <summary>
+        /// Get the parking rate for the specified country if available.
+        /// </summary>
+        /// <param name="countryCode">ISO 2 Code of the country. See <see cref="EUCountryCodes"/> for available options.</param>
+        /// <returns><see cref="VatRate"/> object.</returns>
+        public VatRate? GetParkingRateForCountry(string countryCode)
 		{
 			return GetParkingRateForCountry(Enum.Parse<EUCountryCodes>(countryCode));
 		}
 
-		public VatRate? GetParkingRateForCountry(EUCountryCodes country)
+        /// <summary>
+        /// Get the parking rate for the specified country if available.
+        /// </summary>
+        /// <param name="country">ISO 2 Code of the country. See <see cref="EUCountryCodes"/> for available options.</param>
+        /// <returns><see cref="VatRate"/> object.</returns>
+        public VatRate? GetParkingRateForCountry(EUCountryCodes country)
 		{
 			return GetRates(country, VatRateType.Parking).FirstOrDefault();
 		}

@@ -7,24 +7,51 @@ using Newtonsoft.Json;
 
 namespace CoderBash.Net.Vies.Clients
 {
+	/// <summary>
+	/// Client for requesting a VAT number validation from the VIES service.
+	/// </summary>
 	public sealed class ViesClient : IDisposable
 	{
 		private readonly HttpClient _client;
 
+		/// <summary>
+		/// 
+		/// </summary>
 		public ViesClient()
 		{
 			_client = SetupClient();
 		}
 
-		public async Task<VatValidationResponse> ValidateVatNumberAsync(string countryCode, string vatNumber, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Validate a VAT number for a specific country.
+        /// </summary>
+        /// <param name="countryCode">ISO 2 Code of the country. See <see cref="EUCountryCodes"/> for available options.</param>
+        /// <param name="vatNumber">The VAT number to validate</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns><see cref="VatValidationResponse"/> object.</returns>
+        public async Task<VatValidationResponse> ValidateVatNumberAsync(string countryCode, string vatNumber, CancellationToken cancellationToken = default)
 		{
 			var country = (EUCountryCodes)Enum.Parse(typeof(EUCountryCodes), countryCode);
 
 			return await ValidateVatNumberAsync(country, vatNumber, cancellationToken);
 		}
 
-		public async Task<VatValidationResponse> ValidateVatNumberAsync(EUCountryCodes country, string vatNumber, CancellationToken cancellationToken = default)
+        /// <summary>
+        /// Validate a VAT number for a specific country.
+        /// </summary>
+        /// <param name="country">ISO 2 Code of the country. See <see cref="EUCountryCodes"/> for available options.</param>
+        /// <param name="vatNumber">The VAT number to validate.</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns><see cref="VatValidationResponse"/> object.</returns>
+        /// <exception cref="ViesRequestException"></exception>
+        /// <exception cref="ViesModelException"></exception>
+        public async Task<VatValidationResponse> ValidateVatNumberAsync(EUCountryCodes country, string vatNumber, CancellationToken cancellationToken = default)
 		{
+			vatNumber = vatNumber.Replace(" ", "")
+				.Replace(".", "")
+				.Replace(country.ToString(), "")
+				.Trim();
+
 			var response = await _client.GetAsync($"{country}/vat/{vatNumber}", cancellationToken);
 
 			if (!response.IsSuccessStatusCode)
@@ -58,6 +85,9 @@ namespace CoderBash.Net.Vies.Clients
 		}
 
         #region IDisposable implementation
+		/// <summary>
+		/// 
+		/// </summary>
 		public void Dispose()
 		{
 			GC.SuppressFinalize(this);

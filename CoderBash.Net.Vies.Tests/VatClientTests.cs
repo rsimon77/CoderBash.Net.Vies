@@ -1,6 +1,8 @@
 ﻿using System;
 using CoderBash.Net.Vies.Clients;
 using CoderBash.Net.Vies.Enums;
+using CoderBash.Net.Vies.Exceptions;
+using CoderBash.Net.Vies.Models;
 
 namespace CoderBash.Net.Vies.Tests
 {
@@ -11,6 +13,14 @@ namespace CoderBash.Net.Vies.Tests
 		TestOf = typeof(VatClient))]
 	public class VatClientTests
 	{
+		[Test(
+			Author = "NicolasDemarbaix",
+			Description = "Check invalid rate value.")]
+		public void Test_Vat_InvalidRateValue()
+		{
+			Assert.Throws<VatRateException>(() => new VatRate(EUCountryCodes.BE, VatRateType.Standard, 21));
+		}
+
 		[Test(
 			Author = "NicolasDemarbaix",
 			Description = "Get valid rates for country")]
