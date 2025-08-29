@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 
 namespace CoderBash.Net.Vies.Exceptions
 {
-	/// <summary>
-	/// Represents a Vat Rate error.
-	/// </summary>
+    /// <summary>
+    /// Represents a Vat Rate error.
+    /// </summary>
 	[ExcludeFromCodeCoverage]
-	[Serializable]
 	public class VatRateException : Exception
 	{
         /// <summary>
@@ -32,15 +30,6 @@ namespace CoderBash.Net.Vies.Exceptions
         /// <param name="message">Error message</param>
         /// <param name="innerException">A reference to the inner exception that caused this exception, or null if nothing is specified</param>
         public VatRateException(string? message, Exception? innerException) : base(message, innerException)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="VatRateException"/> with serialized data
-        /// </summary>
-        /// <param name="info">The object that holds the serialized object data.</param>
-        /// <param name="context">The contextual information about the source or destination.</param>
-        protected VatRateException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }

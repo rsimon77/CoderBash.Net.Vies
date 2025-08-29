@@ -5,7 +5,7 @@
 
 Integrate the [VIES Service](https://ec.europa.eu/taxation_customs/vies/#/vat-validation) API into your .NET project!
 
-The CoderBash VIES .NET Library targets the .NET 6 and .NET 7 frameworks.
+The CoderBash VIES .NET Library targets the .NET 8 framework.
 
 ## Installation with Nuget
 To install the library via NuGet:

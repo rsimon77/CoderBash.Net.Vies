@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 
 namespace CoderBash.Net.Vies.Exceptions
 {
@@ -8,7 +7,6 @@ namespace CoderBash.Net.Vies.Exceptions
     /// Represents a Vies model error.
     /// </summary>
 	[ExcludeFromCodeCoverage]
-	[Serializable]   
 	public class ViesModelException : Exception
 	{
         /// <summary>
@@ -32,15 +30,6 @@ namespace CoderBash.Net.Vies.Exceptions
         /// <param name="message">Error message</param>
         /// <param name="innerException">A reference to the inner exception that caused this exception, or null if nothing is specified</param>
         public ViesModelException(string? message, Exception? innerException) : base(message, innerException)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ViesModelException"/> with serialized data
-        /// </summary>
-        /// <param name="info">The object that holds the serialized object data.</param>
-        /// <param name="context">The contextual information about the source or destination.</param>
-        protected ViesModelException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
     }
