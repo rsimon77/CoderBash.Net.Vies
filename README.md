@@ -5,7 +5,13 @@
 
 Integrate the [VIES Service](https://ec.europa.eu/taxation_customs/vies/#/vat-validation) API into your .NET project!
 
-The CoderBash VIES .NET Library targets the .NET 6 and .NET 7 frameworks.
+The CoderBash VIES .NET Library targets .NET 8.0 and includes both a library and a Blazor Server UI.
+
+## Projects in this Solution
+
+- **CoderBash.Net.Vies** - Core library for VAT validation and rate lookup
+- **CoderBash.Net.Vies.BlazorUI** - Blazor Server web application with interactive UI
+- **CoderBash.Net.Vies.Tests** - Unit tests for the library
 
 ## Installation with Nuget
 To install the library via NuGet:
@@ -14,7 +20,22 @@ To install the library via NuGet:
 * Install using the dotnet CLI with `dotnet add package CoderBash.Net.Vies`
 
 ## Usage
-### 1. Validating VAT numbers.
+
+### Using the Blazor UI
+Run the Blazor Server application for an interactive web interface:
+
+```bash
+cd CoderBash.Net.Vies.BlazorUI
+dotnet run
+```
+
+The web application provides:
+- **VAT Number Validation** - Interactive form to validate EU VAT numbers
+- **VAT Rates Lookup** - Browse and filter VAT rates for all EU member states
+
+### Using the Library Programmatically
+
+#### 1. Validating VAT numbers
 To validate VAT numbers you can use the `ViesClient` class:
 
 ```C#
@@ -31,7 +52,7 @@ if (vatResult.isValid) {
 }
 ```
 
-### 2. Get VAT Rate information
+#### 2. Get VAT Rate information
 With the VatClient you can retrieve specific VAT rate information for a country. 
 
 ```C#

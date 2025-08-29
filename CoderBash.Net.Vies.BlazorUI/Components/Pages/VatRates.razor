@@ -1,0 +1,265 @@
+@page "/vat-rates"
+@using CoderBash.Net.Vies.Clients
+@using CoderBash.Net.Vies.Enums
+@using CoderBash.Net.Vies.Models
+
+<PageTitle>EU VAT Rates</PageTitle>
+
+<h1>EU VAT Rates</h1>
+
+<p>View current VAT rates for all EU member states.</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Select Country</h5>
+                <div class="mb-3">
+                    <label for="countrySelect" class="form-label">Country</label>
+                    <select @onchange="OnCountryChanged" class="form-select" id="countrySelect">
+                        <option value="">-- All Countries --</option>
+                        @foreach (var country in Enum.GetValues<EUCountryCodes>())
+                        {
+                            <option value="@country">@country - @GetCountryName(country)</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    @if (selectedCountry.HasValue)
+                    {
+                        <text>VAT Rates for @GetCountryName(selectedCountry.Value)</text>
+                    }
+                    else
+                    {
+                        <text>All EU VAT Rates</text>
+                    }
+                </h5>
+                
+                @if (vatRates.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Country</th>
+                                    <th>Rate Type</th>
+                                    <th>Rate (%)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var rate in vatRates.OrderBy(r => r.Country).ThenBy(r => r.Type))
+                                {
+                                    <tr>
+                                        <td>@rate.Country - @GetCountryName(rate.Country)</td>
+                                        <td>
+                                            <span class="badge @GetRateTypeBadgeClass(rate.Type)">
+                                                @GetRateTypeDisplayName(rate.Type)
+                                            </span>
+                                        </td>
+                                        <td>@((rate.Rate * 100).ToString("F1"))%</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p>No VAT rates available for the selected criteria.</p>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (selectedCountry.HasValue)
+{
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Standard Rate</h6>
+                    @{
+                        var standardRate = vatRates.FirstOrDefault(r => r.Type == VatRateType.Standard);
+                    }
+                    @if (standardRate != null)
+                    {
+                        <h3 class="text-primary">@((standardRate.Rate * 100).ToString("F1"))%</h3>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Not available</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Reduced Rates</h6>
+                    @{
+                        var reducedRates = vatRates.Where(r => r.Type == VatRateType.Reduced).ToList();
+                    }
+                    @if (reducedRates.Any())
+                    {
+                        @foreach (var rate in reducedRates)
+                        {
+                            <div class="badge bg-secondary me-1">@((rate.Rate * 100).ToString("F1"))%</div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">Not available</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h6 class="card-title">Special Rates</h6>
+                    @{
+                        var specialRates = vatRates.Where(r => r.Type == VatRateType.SuperReduced || r.Type == VatRateType.Parking).ToList();
+                    }
+                    @if (specialRates.Any())
+                    {
+                        @foreach (var rate in specialRates)
+                        {
+                            <div>
+                                <span class="badge @GetRateTypeBadgeClass(rate.Type)">
+                                    @GetRateTypeDisplayName(rate.Type): @((rate.Rate * 100).ToString("F1"))%
+                                </span>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">Not available</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private EUCountryCodes? selectedCountry;
+    private List<VatRate> vatRates = new();
+    private VatClient vatClient = new();
+
+    protected override void OnInitialized()
+    {
+        LoadAllRates();
+    }
+
+    private void OnCountryChanged(ChangeEventArgs e)
+    {
+        if (string.IsNullOrEmpty(e.Value?.ToString()))
+        {
+            selectedCountry = null;
+            LoadAllRates();
+        }
+        else
+        {
+            selectedCountry = Enum.Parse<EUCountryCodes>(e.Value.ToString()!);
+            LoadRatesForCountry(selectedCountry.Value);
+        }
+    }
+
+    private void LoadAllRates()
+    {
+        vatRates.Clear();
+        foreach (var country in Enum.GetValues<EUCountryCodes>())
+        {
+            try
+            {
+                var rates = vatClient.GetRatesForCountry(country);
+                vatRates.AddRange(rates);
+            }
+            catch
+            {
+                // Continue loading other countries if one fails
+            }
+        }
+    }
+
+    private void LoadRatesForCountry(EUCountryCodes country)
+    {
+        try
+        {
+            vatRates = vatClient.GetRatesForCountry(country);
+        }
+        catch
+        {
+            vatRates.Clear();
+        }
+    }
+
+    private string GetCountryName(EUCountryCodes country)
+    {
+        return country switch
+        {
+            EUCountryCodes.AT => "Austria",
+            EUCountryCodes.BE => "Belgium",
+            EUCountryCodes.BG => "Bulgaria",
+            EUCountryCodes.CY => "Cyprus",
+            EUCountryCodes.CZ => "Czechia",
+            EUCountryCodes.DE => "Germany",
+            EUCountryCodes.DK => "Denmark",
+            EUCountryCodes.EE => "Estonia",
+            EUCountryCodes.EL => "Greece",
+            EUCountryCodes.ES => "Spain",
+            EUCountryCodes.FI => "Finland",
+            EUCountryCodes.FR => "France",
+            EUCountryCodes.HR => "Croatia",
+            EUCountryCodes.HU => "Hungary",
+            EUCountryCodes.IE => "Ireland",
+            EUCountryCodes.IT => "Italy",
+            EUCountryCodes.LT => "Lithuania",
+            EUCountryCodes.LU => "Luxembourg",
+            EUCountryCodes.LV => "Latvia",
+            EUCountryCodes.MT => "Malta",
+            EUCountryCodes.NL => "Netherlands",
+            EUCountryCodes.PL => "Poland",
+            EUCountryCodes.PT => "Portugal",
+            EUCountryCodes.RO => "Romania",
+            EUCountryCodes.SE => "Sweden",
+            EUCountryCodes.SI => "Slovenia",
+            EUCountryCodes.SK => "Slovakia",
+            _ => country.ToString()
+        };
+    }
+
+    private string GetRateTypeDisplayName(VatRateType type)
+    {
+        return type switch
+        {
+            VatRateType.Standard => "Standard",
+            VatRateType.Reduced => "Reduced",
+            VatRateType.SuperReduced => "Super Reduced",
+            VatRateType.Parking => "Parking",
+            _ => type.ToString()
+        };
+    }
+
+    private string GetRateTypeBadgeClass(VatRateType type)
+    {
+        return type switch
+        {
+            VatRateType.Standard => "bg-primary",
+            VatRateType.Reduced => "bg-secondary",
+            VatRateType.SuperReduced => "bg-success",
+            VatRateType.Parking => "bg-warning",
+            _ => "bg-light"
+        };
+    }
+}
