@@ -1,0 +1,179 @@
+@page "/vat-validation"
+@using CoderBash.Net.Vies.Clients
+@using CoderBash.Net.Vies.Enums
+@using CoderBash.Net.Vies.Models
+@using CoderBash.Net.Vies.Exceptions
+@inject IJSRuntime JSRuntime
+
+<PageTitle>VAT Number Validation</PageTitle>
+
+<h1>VAT Number Validation</h1>
+
+<p>Validate EU VAT numbers using the official VIES service.</p>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <EditForm Model="@validationModel" OnValidSubmit="@ValidateVatNumber">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+
+                    <div class="mb-3">
+                        <label for="country" class="form-label">Country</label>
+                        <InputSelect @bind-Value="validationModel.Country" class="form-select" id="country">
+                            <option value="">-- Select Country --</option>
+                            @foreach (var country in Enum.GetValues<EUCountryCodes>())
+                            {
+                                <option value="@country">@country - @GetCountryName(country)</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => validationModel.Country)" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="vatNumber" class="form-label">VAT Number</label>
+                        <InputText @bind-Value="validationModel.VatNumber" class="form-control" id="vatNumber" placeholder="Enter VAT number without country prefix" />
+                        <div class="form-text">Enter the VAT number without the country code prefix (e.g., just "123456789" not "BE123456789")</div>
+                        <ValidationMessage For="@(() => validationModel.VatNumber)" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" disabled="@isLoading">
+                        @if (isLoading)
+                        {
+                            <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                        }
+                        Validate VAT Number
+                    </button>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (validationResult != null)
+{
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Validation Result</h5>
+                    
+                    @if (validationResult.IsValid)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            <h6 class="alert-heading"><i class="bi bi-check-circle-fill"></i> Valid VAT Number</h6>
+                            <p class="mb-1"><strong>Company:</strong> @(!string.IsNullOrEmpty(validationResult.Name) ? validationResult.Name : "Information not available")</p>
+                            <p class="mb-1"><strong>Address:</strong> @(!string.IsNullOrEmpty(validationResult.Address) ? validationResult.Address : "Information not available")</p>
+                            <p class="mb-1"><strong>VAT Number:</strong> @validationResult.VatNumber</p>
+                            <p class="mb-1"><strong>Country:</strong> @validationResult.Country</p>
+                            <p class="mb-0"><strong>Validation Date:</strong> @validationResult.RequestDate.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            <h6 class="alert-heading"><i class="bi bi-x-circle-fill"></i> Invalid VAT Number</h6>
+                            <p class="mb-0">The provided VAT number is not valid or not found in the VIES database.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="row mt-4">
+        <div class="col-md-8">
+            <div class="alert alert-warning" role="alert">
+                <h6 class="alert-heading"><i class="bi bi-exclamation-triangle-fill"></i> Error</h6>
+                <p class="mb-0">@errorMessage</p>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private VatValidationModel validationModel = new();
+    private VatValidationResponse? validationResult;
+    private string? errorMessage;
+    private bool isLoading = false;
+
+    private async Task ValidateVatNumber()
+    {
+        if (string.IsNullOrEmpty(validationModel.Country) || string.IsNullOrEmpty(validationModel.VatNumber))
+            return;
+
+        isLoading = true;
+        validationResult = null;
+        errorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            using var client = new ViesClient();
+            var countryCode = Enum.Parse<EUCountryCodes>(validationModel.Country);
+            validationResult = await client.ValidateVatNumberAsync(countryCode, validationModel.VatNumber);
+        }
+        catch (ViesRequestException ex)
+        {
+            errorMessage = $"VIES Request Error: {ex.Message}";
+        }
+        catch (ViesModelException ex)
+        {
+            errorMessage = $"VIES Model Error: {ex.Message}";
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"An error occurred: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private string GetCountryName(EUCountryCodes country)
+    {
+        return country switch
+        {
+            EUCountryCodes.AT => "Austria",
+            EUCountryCodes.BE => "Belgium",
+            EUCountryCodes.BG => "Bulgaria",
+            EUCountryCodes.CY => "Cyprus",
+            EUCountryCodes.CZ => "Czechia",
+            EUCountryCodes.DE => "Germany",
+            EUCountryCodes.DK => "Denmark",
+            EUCountryCodes.EE => "Estonia",
+            EUCountryCodes.EL => "Greece",
+            EUCountryCodes.ES => "Spain",
+            EUCountryCodes.FI => "Finland",
+            EUCountryCodes.FR => "France",
+            EUCountryCodes.HR => "Croatia",
+            EUCountryCodes.HU => "Hungary",
+            EUCountryCodes.IE => "Ireland",
+            EUCountryCodes.IT => "Italy",
+            EUCountryCodes.LT => "Lithuania",
+            EUCountryCodes.LU => "Luxembourg",
+            EUCountryCodes.LV => "Latvia",
+            EUCountryCodes.MT => "Malta",
+            EUCountryCodes.NL => "Netherlands",
+            EUCountryCodes.PL => "Poland",
+            EUCountryCodes.PT => "Portugal",
+            EUCountryCodes.RO => "Romania",
+            EUCountryCodes.SE => "Sweden",
+            EUCountryCodes.SI => "Slovenia",
+            EUCountryCodes.SK => "Slovakia",
+            _ => country.ToString()
+        };
+    }
+
+    public class VatValidationModel
+    {
+        public string Country { get; set; } = string.Empty;
+        public string VatNumber { get; set; } = string.Empty;
+    }
+}

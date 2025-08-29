@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoderBash.Net.Vies", "Coder
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoderBash.Net.Vies.Tests", "CoderBash.Net.Vies.Tests\CoderBash.Net.Vies.Tests.csproj", "{D1F887B9-563B-4675-A73B-87618EA7C20C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoderBash.Net.Vies.BlazorUI", "CoderBash.Net.Vies.BlazorUI\CoderBash.Net.Vies.BlazorUI.csproj", "{96BD7FC9-DB7F-4A4A-B7FF-430CFE5F72F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{D1F887B9-563B-4675-A73B-87618EA7C20C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D1F887B9-563B-4675-A73B-87618EA7C20C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D1F887B9-563B-4675-A73B-87618EA7C20C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{96BD7FC9-DB7F-4A4A-B7FF-430CFE5F72F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{96BD7FC9-DB7F-4A4A-B7FF-430CFE5F72F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{96BD7FC9-DB7F-4A4A-B7FF-430CFE5F72F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{96BD7FC9-DB7F-4A4A-B7FF-430CFE5F72F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
