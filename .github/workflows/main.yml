@@ -24,14 +24,11 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-    - name: Test & Analyze
-      uses: highbyte/sonarscan-dotnet@v2.1.3
-      with:
-        sonarProjectKey: ${{ secrets.SONAR_PROJECTKEY }}
-        sonarProjectName: ${{ secrets.SONAR_PROJECTNAME }}
-        sonarOrganization: ${{ secrets.SONAR_ORGANIZATION }}
-        dotnetTestArguments: --logger trx --collect:"XPlat Code Coverage" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
-        sonarBeginArguments: /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml" -d:sonar.cs.vstest.reportsPaths="**/TestResults/*.trx"
+    - name: Download a Build Artifact
+      uses: actions/download-artifact@v5.0.0
+      with: 
+        # Name of the artifact to download. If unspecified, all artifacts for the run are downloaded.
+        name: test # optional
+          # IDs of the artifacts to download, comma-separated. Either inputs `artifact-ids` or `name` can be used, but not both.
 
-env:
-    SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+                    
